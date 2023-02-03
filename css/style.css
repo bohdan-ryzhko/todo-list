@@ -1,0 +1,243 @@
+body {
+	margin: 0;
+	max-width: 100%;
+	font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+	color: #FEF7FF;
+	position: relative;
+}
+
+/* Include the padding and border in an element's total width and height */
+* {
+	box-sizing: border-box;
+	margin: 0;
+}
+
+/* Remove margins and padding from the list */
+ul {
+	margin: 0;
+	padding: 0;
+}
+
+button {
+	border: none;
+}
+
+/* Style the list items */
+ul li {
+	cursor: pointer;
+	position: relative;
+	padding: 12px 8px 12px 40px;
+	list-style-type: none;
+	background: rgba(0, 0, 0, 0.3);
+	font-size: 18px;
+	transition: 0.2s;
+
+	/* make the list items unselectable */
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+/* Set all odd list items to a different color (zebra-stripes) */
+ul li:nth-child(odd) {
+	background: rgba(0, 0, 0, 0.1);
+}
+
+/* Darker background-color on hover */
+ul li:hover {
+	background: rgba(0, 0, 0, 0.5);
+}
+
+/* When clicked on, add a background color and strike out text */
+ul li.checked {
+	background: #888;
+	color: #fff;
+	text-decoration: line-through;
+}
+
+/* Add a "checked" mark when clicked on */
+ul li.checked::before {
+	content: '';
+	position: absolute;
+	border-color: #fff;
+	border-style: solid;
+	border-width: 0 2px 2px 0;
+	top: 10px;
+	left: 16px;
+	transform: rotate(45deg);
+	height: 15px;
+	width: 7px;
+}
+
+.container {
+	max-width: 1000px;
+	margin: 0 auto;
+	padding: 0 15px;
+	overflow-x: hidden;
+	position: relative;
+}
+
+.title {
+	margin: 5px;
+}
+
+/* Style the close button */
+.close-btn {
+	position: absolute;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	padding: 12px 16px 12px 16px;
+	background-color: transparent;
+	cursor: pointer;
+}
+
+.close-btn:hover {
+	background-color: #f44336;
+	color: white;
+}
+
+/* Style the header */
+.header {
+	padding-top: 40px;
+	margin-bottom: 40px;
+	color: white;
+	text-align: center;
+}
+
+/* Clear floats after the header */
+.header:after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+.header__input {
+	margin-bottom: 10px;
+	height: 40px;
+}
+
+.header__input>#todo-input {
+	height: 100%;
+	background: #f0f0f0;
+}
+
+.header__input>#todo-input:focus-visible {
+	outline: none;
+}
+
+.header__buttons {
+	height: 40px;
+	display: flex;
+	justify-content: space-between;
+}
+
+.header__buttons>button {
+	height: 100%;
+	flex-basis: calc(100% / 3 - 40px);
+	padding: 10px 15px;
+	background: #f0f0f0;
+	color: #555;
+	float: left;
+	text-align: center;
+	font-size: 16px;
+	cursor: pointer;
+	transition: 0.3s;
+	border-radius: 0;
+	transition: all 0.3s ease;
+	position: relative;
+}
+
+.header__buttons>button:hover {
+	background: #d0d0d0;
+}
+
+/* Style the input */
+input {
+	margin: 0;
+	border: none;
+	border-radius: 0;
+	width: 100%;
+	padding: 10px;
+	float: left;
+	font-size: 16px;
+}
+
+.todo-list__item {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.todo-list__item-description {
+	flex-basis: calc(100% - 60px);
+}
+
+.add-item-btn::after {
+	content: 'or Ctrl + Enter';
+	position: absolute;
+	bottom: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	font-size: 10px;
+}
+
+.todo-list__item-date {
+	font-size: 12px;
+}
+
+@media screen and (max-width: 580px) {
+	.add-item-btn::after {
+		display: none;
+	}
+}
+
+.addBtn:hover {
+	background-color: #bbb;
+}
+
+.sort-items-btn {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.sort-items-btn>span {
+	margin-left: 5px;
+	align-self: flex-start;
+}
+
+.add-alert,
+.empty-alert,
+.one-alert {
+	position: absolute;
+	top: 20px;
+	left: 15px;
+	right: 15px;
+	padding: 20px;
+	max-width: 500px;
+	margin: 0 auto;
+	text-align: center;
+	border-radius: 10px;
+	transform: translateY(-200%);
+	transition: all 0.6s ease;
+}
+
+.add-alert {
+	background-color: #0089BA;
+}
+
+.empty-alert {
+	background-color: #C34A36;
+}
+
+.one-alert {
+	background-color: #008F7A;
+}
+
+.add-alert.active,
+.empty-alert.active,
+.one-alert.active {
+	transform: translateX(0);
+}
