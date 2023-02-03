@@ -21,12 +21,29 @@ const rendomBG = [
 	'#A178DF'
 ];
 
+const months = [
+	'Jan',
+	'Feb',
+	'Mar',
+	'Apr',
+	'May',
+	'June',
+	'July',
+	'August',
+	'Sept',
+	'Oct',
+	'Nov',
+	'Dec'
+]
+
 function generateRandomColorOfBody(list) {
 	const min = 0;
 	const max = list.length - 1;
 	const rand = min - 0.5 + Math.random() * (max - min + 1);
 	document.body.style.backgroundColor = list[Math.round(rand)];
 }
+
+let currentId = 0;
 
 generateRandomColorOfBody(rendomBG);
 
@@ -48,6 +65,31 @@ function addListItem() {
 	refs.myInput.value = '';
 }
 
+function createItemList(descr, time, isDone = false, id = currentId) {
+	const itemList = document.createElement('li');
+	itemList.classList.add('todo-list__item');
+	itemList.dataset.id = id;
+	if (isDone) itemList.classList.add('checked');
+	itemList.appendChild(createNodeText(descr, 'todo-list__item-description'));
+	itemList.appendChild(createNodeText(time, 'todo-list__item-date'));
+	itemList.appendChild(getCloseBtn());
+	return itemList;
+}
+
+function createNodeText(text, className) {
+	const descriptionItem = document.createElement('p');
+	descriptionItem.classList.add(className);
+	descriptionItem.textContent = text;
+	return descriptionItem;
+}
+
+function getCloseBtn() {
+	const closeBtn = document.createElement('button');
+	closeBtn.className = 'close-btn';
+	closeBtn.appendChild(document.createTextNode("\u2573"));
+
+	return closeBtn;
+}
 
 function showNotification(notification) {
 	if (notification.classList.contains('active')) {
@@ -71,6 +113,10 @@ function convertTime(ms) {
 	const minutesms = ms % (60*1000);
 	const sec = Math.floor(minutesms / 1000);
 	return {year, month, date, hours, minutes, sec}
+}
+
+function addLeadingZero(value) {
+	return String(value).padStart(2, '0');
 }
 
 refs.addBtn.addEventListener('click', addListItem);
