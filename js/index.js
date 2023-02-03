@@ -29,3 +29,34 @@ function generateRandomColorOfBody(list) {
 }
 
 generateRandomColorOfBody(rendomBG);
+
+function addListItem() {
+	const description = refs.myInput.value;
+	if (description === "") {
+		showNotification(refs.addAlert);
+		return;
+	}
+
+	const dateNow = convertTime(Date.now());
+	const { year, month, date, hours, minutes, sec } = dateNow;
+	const time =
+		`${year}, ${months[month]} ${addLeadingZero(date)}, ${addLeadingZero(hours)}:${addLeadingZero(minutes)}:${addLeadingZero(sec)}`;
+
+	refs.todoList.appendChild(createItemList(description, time));
+	addTaskToStorage(description.trim(), dateNow);
+
+	refs.myInput.value = '';
+}
+
+
+function showNotification(notification) {
+	if (notification.classList.contains('active')) {
+		return;
+	}
+	notification.classList.add('active');
+	setTimeout(() => {
+		notification.classList.remove('active');
+	}, 4000);
+}
+
+refs.addBtn.addEventListener('click', addListItem);
