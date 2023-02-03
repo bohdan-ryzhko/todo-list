@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Todo-List</title>
+	<link rel="stylesheet" href="./css/style.css" />
+</head>
+
+<body>
+	<div class="container">
+		<header class="header">
+			<h2 class="title">My To Do List</h2>
+			<div class="header__input">
+				<input type="text" id="todo-input" placeholder="Enter...">
+			</div>
+			<div class="header__buttons">
+				<button class="add-item-btn">Add</button>
+				<button class="sort-items-btn">
+					Sort date
+					<span class="sort-arrow down"></span>
+				</button>
+				<button class="clear-items-btn">Clear</button>
+			</div>
+		</header>
+
+		<ul id="todo-list-js" class="todo-list"></ul>
+		<div class="correct-backdrop">
+			<div class="correct-wrapper">
+
+			</div>
+		</div>
+		<div class="add-alert">You must write something</div>
+		<div class="empty-alert">Your list is empty</div>
+		<div class="one-alert">You have 1 task. You need more :)</div>
+	</div>
+
+
+
+	<script src="./js/index.js" type="module"></script>
+</body>
+
+</html>
