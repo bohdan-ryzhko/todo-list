@@ -12,15 +12,6 @@ const refs = {
 	closeBtn: document.getElementsByClassName('close'),
 }
 
-const rendomBG = [
-	'#B15B00',
-	'#4E8397',
-	'#00896F',
-	'#4B4453',
-	'#FF8066',
-	'#A178DF'
-];
-
 const months = [
 	'Jan',
 	'Feb',
@@ -36,6 +27,15 @@ const months = [
 	'Dec'
 ]
 
+const rendomBG = [
+	'#B15B00',
+	'#4E8397',
+	'#00896F',
+	'#4B4453',
+	'#FF8066',
+	'#A178DF'
+];
+
 function generateRandomColorOfBody(list) {
 	const min = 0;
 	const max = list.length - 1;
@@ -43,9 +43,39 @@ function generateRandomColorOfBody(list) {
 	document.body.style.backgroundColor = list[Math.round(rand)];
 }
 
+generateRandomColorOfBody(rendomBG);
+
+const LOCAL_KEY = 'localItem';
+const SORT_ARROW = 'sortArrow';
+const ARROW_DOWN = '\u2193';
+const ARROW_UP = '\u2191';
+
+
 let currentId = 0;
 
-generateRandomColorOfBody(rendomBG);
+function fillTasksList() {
+	const currentState = load(LOCAL_KEY);
+	const currentSortArrow = load(SORT_ARROW);
+	if (currentState !== undefined) {
+		currentState.forEach(({ task, time, isDone, id }) => {
+			const { year, month, date, hours, minutes, sec } = time;
+			const timeNow =
+				`${year}, ${months[month]} ${addLeadingZero(date)}, ${addLeadingZero(hours)}:${addLeadingZero(minutes)}:${addLeadingZero(sec)}`;
+			refs.todoList.appendChild(createItemList(task, timeNow, isDone, id));
+			currentId = currentState[currentState.length - 1].id + 1;
+		});
+	}
+
+	if (currentSortArrow === 'sort-arrow down' && refs.sortArrow.classList.contains('down')) {
+		refs.sortArrow.classList.remove('up')
+		refs.sortArrow.classList.add('down')
+		addArrowSortBtn(ARROW_DOWN);
+	} else if (currentSortArrow === 'sort-arrow up' && refs.sortArrow.classList.contains('up')) {
+		refs.sortArrow.classList.remove('down')
+		refs.sortArrow.classList.add('up')
+		addArrowSortBtn(ARROW_UP);
+	}
+}
 
 function addListItem() {
 	const description = refs.myInput.value;
@@ -63,6 +93,24 @@ function addListItem() {
 	addTaskToStorage(description.trim(), dateNow);
 
 	refs.myInput.value = '';
+}
+
+function save(key, value) {
+	try {
+		const serializedData = JSON.stringify(value);
+		localStorage.setItem(key, serializedData);
+	} catch (error) {
+		console.log(error);
+	}
+}
+
+function load(key) {
+	try {
+		const serializedState = localStorage.getItem(key);
+		return serializedState === null ? undefined : JSON.parse(serializedState);
+	} catch (error) {
+		console.log(error);
+	}
 }
 
 function createItemList(descr, time, isDone = false, id = currentId) {
@@ -83,6 +131,39 @@ function createNodeText(text, className) {
 	return descriptionItem;
 }
 
+function onListItem(event) {
+	const currentState = load(LOCAL_KEY);
+	if (event.target.nodeName === 'LI') {
+		event.target.classList.toggle('checked');
+
+		const taskIndex = currentState.findIndex(
+			task => +task.id === +event.target.dataset.id
+		);
+
+		currentState[taskIndex].isDone = !currentState[taskIndex].isDone;
+
+	} else if (event.target.nodeName === 'P') {
+		event.target.parentElement.classList.toggle('checked');
+
+		const taskIndex = currentState.findIndex(
+			task => +task.id === +event.target.parentElement.dataset.id
+		);
+
+		currentState[taskIndex].isDone = !currentState[taskIndex].isDone;
+		// save(LOCAL_KEY, currentState);
+
+	} else if (event.target.classList.contains('close-btn')) {
+		event.target.parentElement.remove();
+
+		const taskIndex = currentState.findIndex(
+			task => +task.id === +event.target.parentElement.dataset.id
+		);
+		currentState.splice(taskIndex, 1);
+	}
+
+	save(LOCAL_KEY, currentState);
+}
+
 function getCloseBtn() {
 	const closeBtn = document.createElement('button');
 	closeBtn.className = 'close-btn';
@@ -91,15 +172,14 @@ function getCloseBtn() {
 	return closeBtn;
 }
 
-function showNotification(notification) {
-	if (notification.classList.contains('active')) {
-		return;
-	}
-	notification.classList.add('active');
-	setTimeout(() => {
-		notification.classList.remove('active');
-	}, 4000);
-}
+// function getToCorrectBtn() {
+// 	const closeBtn = document.createElement('button');
+// 	closeBtn.className = 'correct-btn';
+// 	// closeBtn.appendChild(document.createTextNode("\u2573"));
+
+// 	return closeBtn;
+// }
+
 
 function convertTime(ms) {
 	const d = new Date();
@@ -115,8 +195,113 @@ function convertTime(ms) {
 	return {year, month, date, hours, minutes, sec}
 }
 
+function pressEnter(event) {
+	if (event.ctrlKey && event.code === 'Enter') {
+		addListItem();
+	}
+	return;
+}
+
+function addArrowSortBtn(arrow) {
+	refs.sortArrow.innerHTML = '';
+	refs.sortArrow.appendChild(document.createTextNode(arrow));
+}
+
+function sortItems() {
+	const currentState = load(LOCAL_KEY);
+	if (!currentState || currentState.length === 0) {
+		showNotification(refs.emptyAlert);
+		return;
+	} else if (currentState.length === 1) {
+		showNotification(refs.oneAlert);
+		return;
+	}
+
+	const arrow = refs.sortArrow;
+	if (arrow.classList.contains('down')) {
+		arrow.classList.remove('down');
+		arrow.classList.add('up');
+		arrow.innerHTML = ''
+		addArrowSortBtn(ARROW_UP);
+	} else {
+		arrow.classList.remove('up');
+		arrow.classList.add('down');
+		arrow.innerHTML = ''
+		addArrowSortBtn(ARROW_DOWN);
+	}
+
+	if (arrow.classList.contains('down')) {
+		const sortItems = [...currentState].sort((a, b) => {
+			return a.id - b.id;
+		});
+		save(LOCAL_KEY, sortItems);
+		const currentClassNameArrow = arrow.getAttribute('class');
+		save(SORT_ARROW, currentClassNameArrow)
+		refs.todoList.innerHTML = '';
+		fillTasksList();
+
+	} else if (refs.sortArrow.classList.contains('up')) {
+		const sortItems = [...currentState].sort((a, b) => {
+			return b.id - a.id;
+		});
+		save(LOCAL_KEY, sortItems);
+		const currentClassNameArrow = arrow.getAttribute('class');
+		save(SORT_ARROW, currentClassNameArrow)
+		refs.todoList.innerHTML = '';
+		fillTasksList();
+	}
+}
+
+function clearList() {
+	if (refs.todoList.children.length === 0) {
+		showNotification(refs.emptyAlert)
+		return;
+	}
+	const isClear = confirm('Это действие необратимо. Хотите очистить?');
+	if (isClear) {
+		currentId = 0;
+		localStorage.clear();
+		refs.todoList.innerHTML = '';
+	}
+}
+
+function showNotification(notification) {
+	if (notification.classList.contains('active')) {
+		return;
+	}
+	notification.classList.add('active');
+	setTimeout(() => {
+		notification.classList.remove('active');
+	}, 4000);
+}
+
+function createTaskObject(task, time, isDone) {
+	return {
+		task,
+		time,
+		isDone,
+		id: currentId,
+	}
+}
+
+function addTaskToStorage(descr, time, isDone = false) {
+	const currentState = load(LOCAL_KEY);
+	if (currentState === undefined) {
+		save(LOCAL_KEY, [createTaskObject(descr,time, isDone)]);
+	} else {
+		currentState.push(createTaskObject(descr,time, isDone));
+		save(LOCAL_KEY, currentState);
+	}
+	currentId += 1;
+}
+
 function addLeadingZero(value) {
 	return String(value).padStart(2, '0');
 }
-
+console.log(localStorage);
 refs.addBtn.addEventListener('click', addListItem);
+refs.todoList.addEventListener('click', onListItem);
+refs.sortBtn.addEventListener('click', sortItems);
+refs.clearBtn.addEventListener('click', clearList);
+document.addEventListener('keypress', pressEnter);
+window.addEventListener('DOMContentLoaded', fillTasksList);
