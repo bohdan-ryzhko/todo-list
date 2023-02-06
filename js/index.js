@@ -257,7 +257,7 @@ function clearList() {
 		showNotification(refs.emptyAlert)
 		return;
 	}
-	const isClear = confirm('Это действие необратимо. Хотите очистить?');
+	const isClear = confirm('This action is irreversible. Do you want to clean?');
 	if (isClear) {
 		currentId = 0;
 		localStorage.clear();
