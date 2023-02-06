@@ -118,9 +118,15 @@ ul li.checked::before {
 	height: 40px;
 }
 
-.header__input>#todo-input {
+.header__input>.todo-input {
 	height: 100%;
-	background: #f0f0f0;
+	background: transparent;
+	border-bottom: 1px solid #FEF7FF;
+	color: #FEF7FF;
+}
+
+.todo-input::placeholder {
+	color: #FEF7FF;
 }
 
 .header__input>#todo-input:focus-visible {
