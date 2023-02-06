@@ -139,9 +139,9 @@ ul li.checked::before {
 	justify-content: space-between;
 }
 
-.header__buttons>button {
+.header__buttons>.btn {
 	height: 100%;
-	flex-basis: calc(100% / 3 - 40px);
+	flex-basis: calc(100% / 4 - 40px);
 	padding: 10px 15px;
 	background: #f0f0f0;
 	color: #555;
@@ -151,12 +151,22 @@ ul li.checked::before {
 	cursor: pointer;
 	transition: 0.3s;
 	border-radius: 0;
+	border-radius: 10px;
 	transition: all 0.3s ease;
 	position: relative;
 }
 
-.header__buttons>button:hover {
+.header__buttons>.btn:hover {
 	background: #d0d0d0;
+}
+
+.active-items-btn.active {
+	background: #008F7A;
+	color: #FEF7FF;
+}
+
+.active-items-btn.active:hover {
+	background: #007160;
 }
 
 /* Style the input */
@@ -216,7 +226,8 @@ input {
 
 .add-alert,
 .empty-alert,
-.one-alert {
+.one-alert,
+.checked-tasks {
 	position: absolute;
 	top: 20px;
 	left: 15px;
@@ -230,7 +241,8 @@ input {
 	transition: all 0.6s ease;
 }
 
-.add-alert {
+.add-alert,
+.checked-tasks {
 	background-color: #0089BA;
 }
 
@@ -244,6 +256,7 @@ input {
 
 .add-alert.active,
 .empty-alert.active,
-.one-alert.active {
+.one-alert.active,
+.checked-tasks.active {
 	transform: translateX(0);
 }

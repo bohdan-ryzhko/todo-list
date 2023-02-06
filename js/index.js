@@ -8,6 +8,8 @@ const refs = {
 	addAlert: document.querySelector('.add-alert'),
 	oneAlert: document.querySelector('.one-alert'),
 	emptyAlert: document.querySelector('.empty-alert'),
+	showActiveBtn: document.querySelector('.active-items-btn'),
+	checkedTasksAlert: document.querySelector('.checked-tasks'),
 	myULItem: document.querySelectorAll('.todo-list__item'),
 	closeBtn: document.getElementsByClassName('close'),
 }
@@ -47,6 +49,7 @@ generateRandomColorOfBody(rendomBG);
 
 const LOCAL_KEY = 'localItem';
 const SORT_ARROW = 'sortArrow';
+const CLOSE_BTN = '\u2573'
 const ARROW_DOWN = '\u2193';
 const ARROW_UP = '\u2191';
 
@@ -167,19 +170,10 @@ function onListItem(event) {
 function getCloseBtn() {
 	const closeBtn = document.createElement('button');
 	closeBtn.className = 'close-btn';
-	closeBtn.appendChild(document.createTextNode("\u2573"));
+	closeBtn.appendChild(document.createTextNode(CLOSE_BTN));
 
 	return closeBtn;
 }
-
-// function getToCorrectBtn() {
-// 	const closeBtn = document.createElement('button');
-// 	closeBtn.className = 'correct-btn';
-// 	// closeBtn.appendChild(document.createTextNode("\u2573"));
-
-// 	return closeBtn;
-// }
-
 
 function convertTime(ms) {
 	const d = new Date();
@@ -252,6 +246,57 @@ function sortItems() {
 	}
 }
 
+function showActiveTasks(event) {
+	const localItems = JSON.parse(localStorage.getItem(LOCAL_KEY));
+	let checkCountDone = 0;
+	for (let i = 0; i < localItems.length; i++) {
+		const element = localItems[i];
+		if (element.isDone) {
+			checkCountDone += 1;
+		}
+	}
+
+	if (checkCountDone === 0) {
+		showNotification(refs.checkedTasksAlert);
+		return;
+	}
+
+	const targetBtn = event.target;
+	const activeClass = 'active';
+
+	if (!targetBtn.classList.contains(activeClass)) {
+		targetBtn.classList.add(activeClass);
+		const checkedItems = localItems.filter(({ isDone }) => !isDone)
+
+		refs.todoList.innerHTML = '';
+		checkedItems.forEach(({ task, time, isDone, id }) => {
+			const { year, month, date, hours, minutes, sec } = time;
+			const timeToActive =
+				`${year}, ${months[month]} ${addLeadingZero(date)}, ${addLeadingZero(hours)}:${addLeadingZero(minutes)}:${addLeadingZero(sec)}`;
+			refs.todoList.appendChild(createItemList(task, timeToActive, isDone, id));
+		});
+	} else {
+		targetBtn.classList.remove(activeClass);
+		refs.todoList.innerHTML = '';
+		localItems.forEach(({ task, time, isDone, id }) => {
+			const { year, month, date, hours, minutes, sec } = time;
+			const timeToActive =
+				`${year}, ${months[month]} ${addLeadingZero(date)}, ${addLeadingZero(hours)}:${addLeadingZero(minutes)}:${addLeadingZero(sec)}`;
+			refs.todoList.appendChild(createItemList(task, timeToActive, isDone, id));
+		});
+	}
+}
+
+function createMurkupList(list) {
+	return list.map(({ task, time: { year, month, date, hours, minutes, sec }, isDone }) => {
+		return `<li class="todo-list__item ${isDone ? 'checked' : ''}">
+		<p class="todo-list__item-description">${task}</p>
+		<p class="todo-list__item-date">${year}, ${months[month]} ${addLeadingZero(date)}, ${addLeadingZero(hours)}:${addLeadingZero(minutes)}:${addLeadingZero(sec)}</p>
+		<button class="close-btn">${CLOSE_BTN}</button>
+		</li>`
+	}).join('');
+}
+
 function clearList() {
 	if (refs.todoList.children.length === 0) {
 		showNotification(refs.emptyAlert)
@@ -298,10 +343,12 @@ function addTaskToStorage(descr, time, isDone = false) {
 function addLeadingZero(value) {
 	return String(value).padStart(2, '0');
 }
-console.log(localStorage);
+
+// console.log(localStorage);
 refs.addBtn.addEventListener('click', addListItem);
 refs.todoList.addEventListener('click', onListItem);
 refs.sortBtn.addEventListener('click', sortItems);
 refs.clearBtn.addEventListener('click', clearList);
+refs.showActiveBtn.addEventListener('click', showActiveTasks);
 document.addEventListener('keypress', pressEnter);
 window.addEventListener('DOMContentLoaded', fillTasksList);
