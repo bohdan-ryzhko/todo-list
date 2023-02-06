@@ -53,7 +53,6 @@ const CLOSE_BTN = '\u2573'
 const ARROW_DOWN = '\u2193';
 const ARROW_UP = '\u2191';
 
-
 let currentId = 0;
 
 function fillTasksList() {
@@ -255,6 +254,12 @@ function showActiveTasks(event) {
 	const targetBtn = event.target;
 	const activeClass = 'active';
 
+	if (localStorage.getItem(LOCAL_KEY) === null ||
+		JSON.parse(localStorage.getItem(LOCAL_KEY)).length === 0) {
+		showNotification(refs.emptyAlert);
+		return;
+	}
+
 	if (checkActiveTasks(localItems) === 0) {
 		showNotification(refs.checkedTasksAlert);
 		return;
@@ -285,10 +290,12 @@ function showActiveTasks(event) {
 
 function checkActiveTasks(array) {
 	let checkCountDone = 0;
-	for (let i = 0; i < array.length; i++) {
-		const element = array[i];
-		if (element.isDone) {
-			checkCountDone += 1;
+	if (array) {
+		for (let i = 0; i < array.length; i++) {
+			const element = array[i];
+			if (element.isDone) {
+				checkCountDone += 1;
+			}
 		}
 	}
 
