@@ -8,7 +8,7 @@ const refs = {
 	addAlert: document.querySelector('.add-alert'),
 	oneAlert: document.querySelector('.one-alert'),
 	emptyAlert: document.querySelector('.empty-alert'),
-	showActiveBtn: document.querySelector('.active-items-btn'),
+	showActiveBtn: document.querySelector('.active-items-btn.btn'),
 	checkedTasksAlert: document.querySelector('.checked-tasks'),
 	myULItem: document.querySelectorAll('.todo-list__item'),
 	closeBtn: document.getElementsByClassName('close'),
@@ -203,6 +203,11 @@ function addArrowSortBtn(arrow) {
 
 function sortItems() {
 	const currentState = load(LOCAL_KEY);
+
+	if (refs.showActiveBtn.classList.contains('active')) {
+		refs.showActiveBtn.classList.remove('active');
+	}
+
 	if (!currentState || currentState.length === 0) {
 		showNotification(refs.emptyAlert);
 		return;
@@ -248,21 +253,13 @@ function sortItems() {
 
 function showActiveTasks(event) {
 	const localItems = JSON.parse(localStorage.getItem(LOCAL_KEY));
-	let checkCountDone = 0;
-	for (let i = 0; i < localItems.length; i++) {
-		const element = localItems[i];
-		if (element.isDone) {
-			checkCountDone += 1;
-		}
-	}
+	const targetBtn = event.target;
+	const activeClass = 'active';
 
-	if (checkCountDone === 0) {
+	if (checkActiveTasks(localItems) === 0) {
 		showNotification(refs.checkedTasksAlert);
 		return;
 	}
-
-	const targetBtn = event.target;
-	const activeClass = 'active';
 
 	if (!targetBtn.classList.contains(activeClass)) {
 		targetBtn.classList.add(activeClass);
@@ -285,6 +282,23 @@ function showActiveTasks(event) {
 			refs.todoList.appendChild(createItemList(task, timeToActive, isDone, id));
 		});
 	}
+}
+
+function checkActiveTasks(array) {
+	let checkCountDone = 0;
+	for (let i = 0; i < array.length; i++) {
+		const element = array[i];
+		if (element.isDone) {
+			checkCountDone += 1;
+		}
+	}
+
+	return checkCountDone;
+
+	// if (checkCountDone === 0) {
+		// showNotification(refs.checkedTasksAlert);
+	// 	return;
+	// }
 }
 
 function createMurkupList(list) {
